@@ -1,0 +1,86 @@
+import { Scene } from "./menutogame/menubuttons.js";
+import { CharacterList, MenuButtonList, CameraMan } from "./objectlists.js";
+import { DrawMenuScreen } from "./menutogame/screen.js";
+import { Canvas, ctx } from "./canvasctx.js";
+import { drawCredits, DrawCreditsScreen, startCredits } from "./ui/credits.js";
+
+export function canvasResize() {
+    Canvas.width = window.innerWidth;
+    Canvas.height = window.innerHeight;
+    CameraMan.width = Canvas.width;
+    CameraMan.height = Canvas.height;
+
+    MenuButtonList.forEach(button => {
+        button.centerX = Canvas.width / 2;
+        button.centerY = Canvas.height / 2;
+    });
+}
+
+canvasResize();
+
+let player = CharacterList[0];
+
+function MenuScene() {
+    creditsStarted = false;
+    DrawMenuScreen();
+    MenuButtonList.forEach(Button => {
+        Button.draw(ctx);
+    });
+}
+
+function GameScene() {
+    player = CharacterList[0];
+
+    // Update player FIRST, then camera follows
+    player.update();
+    CameraMan.follow(player);
+
+    // Draw background with grid so movement is visible
+    ctx.fillStyle = "#2a2a2a";
+    ctx.fillRect(0, 0, Canvas.width, Canvas.height);
+
+    // Draw grid lines relative to camera
+    ctx.strokeStyle = "#3a3a3a";
+    const gridSize = 128;
+    const offsetX = -CameraMan.x % gridSize;
+    const offsetY = -CameraMan.y % gridSize;
+    for (let x = offsetX; x < Canvas.width; x += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, Canvas.height);
+        ctx.stroke();
+    }
+    for (let y = offsetY; y < Canvas.height; y += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(Canvas.width, y);
+        ctx.stroke();
+    }
+
+    // Draw player
+    player.draw(ctx, CameraMan);
+}
+
+let creditsStarted = false;
+
+function creditScene() {
+    DrawCreditsScreen();
+    if (!creditsStarted) {
+        creditsStarted = true;
+        startCredits();
+    }
+    drawCredits();
+}
+
+function gameLoop() {
+    ctx.clearRect(0, 0, Canvas.width, Canvas.height);
+    if (Scene.value === "Menu") MenuScene();
+    else if (Scene.value === "Game") GameScene();
+    else if (Scene.value === "Credits") creditScene();
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+
+window.addEventListener("resize", canvasResize);
