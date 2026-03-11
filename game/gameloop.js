@@ -2,7 +2,7 @@ import { Scene } from "./menutogame/menubuttons.js";
 import { CharacterList, MenuButtonList, CameraMan } from "./objectlists.js";
 import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
-import { drawCredits, DrawCreditsScreen, startCredits } from "./ui/credits.js";
+import { drawCredits, DrawCreditsScreen, startCredits } from "./Ui/credits.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
@@ -31,15 +31,12 @@ function MenuScene() {
 function GameScene() {
     player = CharacterList[0];
 
-    // Update player FIRST, then camera follows
     player.update();
     CameraMan.follow(player);
 
-    // Draw background with grid so movement is visible
     ctx.fillStyle = "#2a2a2a";
     ctx.fillRect(0, 0, Canvas.width, Canvas.height);
 
-    // Draw grid lines relative to camera
     ctx.strokeStyle = "#3a3a3a";
     const gridSize = 128;
     const offsetX = -CameraMan.x % gridSize;
@@ -57,7 +54,6 @@ function GameScene() {
         ctx.stroke();
     }
 
-    // Draw player
     player.draw(ctx, CameraMan);
 }
 
