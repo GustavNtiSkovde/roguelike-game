@@ -2,6 +2,7 @@ import { playbutton } from "./menutogame/menubuttons.js";
 import { Player } from "./characters/player.js";
 import { Camera } from "./camera.js";
 import { Canvas } from "./canvasctx.js";
+import { Bullet } from "./bullets/bullet.js";
 
 Canvas.width = window.innerWidth;
 Canvas.height = window.innerHeight;
@@ -14,4 +15,8 @@ export const MenuButtonList = [
 
 export const CharacterList = [
     new Player(400, 300, "Player", "./game/Pictures/Characters/player.png")
+]
+
+export let bulletsOnScreen = [
+
 ]

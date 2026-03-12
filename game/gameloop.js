@@ -1,5 +1,5 @@
 import { Scene } from "./menutogame/menubuttons.js";
-import { CharacterList, MenuButtonList, CameraMan } from "./objectlists.js";
+import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen } from "./objectlists.js";
 import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
 import { drawCredits, DrawCreditsScreen, startCredits } from "./Ui/credits.js";
@@ -53,6 +53,21 @@ function GameScene() {
         ctx.lineTo(Canvas.width, y);
         ctx.stroke();
     }
+
+    // draw and update bullets
+    bulletsOnScreen.forEach((b, idx) => {
+        b.update();
+        b.draw(ctx, CameraMan);
+        // remove if far outside of camera view
+        if (
+            b.x < CameraMan.x - 100 ||
+            b.x > CameraMan.x + Canvas.width + 100 ||
+            b.y < CameraMan.y - 100 ||
+            b.y > CameraMan.y + Canvas.height + 100
+        ) {
+            bulletsOnScreen.splice(idx, 1);
+        }
+    });
 
     player.draw(ctx, CameraMan);
 }

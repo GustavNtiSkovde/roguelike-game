@@ -1,4 +1,7 @@
 import { Character } from "./superclass.js";
+import { bulletTemplates } from "../bullets/bulletList.js";
+import { Bullet } from "../bullets/bullet.js";
+import { bulletsOnScreen, CameraMan } from "../objectlists.js";
 
 const keys = {};
 
@@ -10,6 +13,8 @@ window.addEventListener('mousemove', (e) => {
     mouseY = e.clientY;
 });
 
+let currentWeapon = "pistol"
+
 export class Player extends Character {
     constructor(x, y, name, imgSrc) {
         super(x, y, name, imgSrc);
@@ -17,6 +22,7 @@ export class Player extends Character {
         this.facing = "down";
         this.moving = false;
         this.shooting = false;
+        this.gun = currentWeapon;
     }
 
     hitbox() {
@@ -28,11 +34,22 @@ export class Player extends Character {
         };
     }
 
+    //Shooting logic
     attack() {
+        const tpl = bulletTemplates[this.gun];
+        if (!tpl) return;
+        const cx = this.x + (this.width || 0) / 2;
+        const cy = this.y + (this.height || 0) / 2;
+        const worldMouseX = mouseX + CameraMan.x;
+        const worldMouseY = mouseY + CameraMan.y;
+        const angle = Math.atan2(worldMouseY - cy, worldMouseX - cx);
 
+        const b = new Bullet(this.gun, cx, cy, angle, tpl.speed, tpl.dmg, tpl.imgsrc);
+        bulletsOnScreen.push(b);
     }
 
     update() {
+        //Movement
         let moveX = 0;
         let moveY = 0;
         if (keys["ArrowUp"] || keys["w"] || keys["W"]) {
@@ -51,6 +68,11 @@ export class Player extends Character {
         this.moving = moveX !== 0 || moveY !== 0;
         this.x += moveX;
         this.y += moveY;
+        
+        //Shoot
+        if (keys[" "]) {
+            this.attack();
+        }
     }
 
     draw(ctx, camera) {
