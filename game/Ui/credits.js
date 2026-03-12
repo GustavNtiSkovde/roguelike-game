@@ -3,7 +3,7 @@ import { Scene } from "../menutogame/menubuttons.js"
 
 const credits = [
     "Developed By",
-    "Your Name Here",
+    "Gustav Jakobsson",
     "",
     "Thank you for playing"
 ];
