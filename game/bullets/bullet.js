@@ -30,7 +30,9 @@ export class Bullet {
 
     draw(ctx, camera) {
         if (!this.img) return;
-        ctx.drawImage(this.img, this.x - camera.x, this.y - camera.y);
+        const width = this.width || this.img.naturalWidth || 0;
+        const height = this.height || this.img.naturalHeight || 0;
+        ctx.drawImage(this.img, this.x - camera.x - width / 2, this.y - camera.y - height / 2);
     }
 
     pushBullet() {
