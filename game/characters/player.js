@@ -1,6 +1,19 @@
 import { Character } from "./superclass.js";
+import { bulletTemplates } from "../bullets/bulletList.js";
+import { Bullet } from "../bullets/bullet.js";
+import { bulletsOnScreen, CameraMan } from "../objectlists.js";
 
 const keys = {};
+
+let mouseX = 0;
+let mouseY = 0;
+
+window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+let currentWeapon = "pistol"
 
 export class Player extends Character {
     constructor(x, y, name, imgSrc) {
@@ -8,6 +21,9 @@ export class Player extends Character {
         this.speed = 5;
         this.facing = "down";
         this.moving = false;
+        this.shooting = false;
+        this.gun = currentWeapon;
+        this.lastShotTime = 0;
     }
 
     hitbox() {
@@ -19,34 +35,76 @@ export class Player extends Character {
         };
     }
 
-    update() {
-        let dx = 0;
-        let dy = 0;
+    //Shooting logic
+    attack() {
+        const tpl = bulletTemplates[this.gun];
+        if (!tpl) return;
 
+        // ShootCooldown
+        const rate = tpl.fireRate || 0;
+        if (rate > 0) {
+            const now = Date.now();
+            const msBetweenShots = 1000 / rate;
+            if (now - this.lastShotTime < msBetweenShots) {
+                return;
+            }
+            this.lastShotTime = now;
+        }
+
+        // Point to shoot at
+        const cx = this.x + (this.width || 0) / 2;
+        const cy = this.y + (this.height || 0) / 2;
+        const worldMouseX = mouseX + CameraMan.x;
+        const worldMouseY = mouseY + CameraMan.y;
+        const angle = Math.atan2(worldMouseY - cy, worldMouseX - cx);
+
+        const b = new Bullet(this.gun, cx, cy, angle, tpl.speed, tpl.dmg, tpl.imgsrc);
+        bulletsOnScreen.push(b);
+    }
+
+    update() {
+        //Movement
+        let moveX = 0;
+        let moveY = 0;
         if (keys["ArrowUp"] || keys["w"] || keys["W"]) {
-            dy -= this.speed;
-            this.facing = "up";
+            moveY -= this.speed;
         }
         if (keys["ArrowDown"] || keys["s"] || keys["S"]) {
-            dy += this.speed;
-            this.facing = "down";
+            moveY += this.speed;
         }
         if (keys["ArrowLeft"] || keys["a"] || keys["A"]) {
-            dx -= this.speed;
-            this.facing = "left";
+            moveX -= this.speed;
         }
         if (keys["ArrowRight"] || keys["d"] || keys["D"]) {
-            dx += this.speed;
-            this.facing = "right";
+            moveX += this.speed;
         }
 
-        this.moving = dx !== 0 || dy !== 0;
-        this.x += dx;
-        this.y += dy;
+        this.moving = moveX !== 0 || moveY !== 0;
+        this.x += moveX;
+        this.y += moveY;
+        
+        //Shoot
+        if (keys[" "]) {
+            this.attack();
+        }
     }
 
     draw(ctx, camera) {
-        ctx.drawImage(this.img, this.x - camera.x, this.y - camera.y);
+        const worldMouseX = mouseX + camera.x;
+        const worldMouseY = mouseY + camera.y;
+
+        const cx = this.x + (this.width || 0) / 2;
+        const cy = this.y + (this.height || 0) / 2;
+        let angle = Math.atan2(worldMouseY - cy, worldMouseX - cx);
+        angle += Math.PI / 2; //Math.atan2s 0 grader är åt höger, tar detta för det ska vara 90 grader så att gubben vapen är mot musen.
+
+        ctx.save();
+        ctx.translate(cx - camera.x, cy - camera.y);
+        ctx.rotate(angle);
+        ctx.drawImage(
+            this.img, -(this.width || 0) / 2, -(this.height || 0) / 2
+        );
+        ctx.restore();
     }
 }
 

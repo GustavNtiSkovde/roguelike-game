@@ -7,7 +7,7 @@ export class Camera {
     }
 
     follow(target) {
-        this.x = target.x - this.width / 2;
-        this.y = target.y - this.height / 2;
+        this.x = target.x + (target.width || 0) / 2 - this.width / 2;
+        this.y = target.y + (target.height || 0) / 2 - this.height / 2;
     }
 }
