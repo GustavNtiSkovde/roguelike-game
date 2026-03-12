@@ -23,6 +23,7 @@ export class Player extends Character {
         this.moving = false;
         this.shooting = false;
         this.gun = currentWeapon;
+        this.lastShotTime = 0;
     }
 
     hitbox() {
@@ -38,6 +39,19 @@ export class Player extends Character {
     attack() {
         const tpl = bulletTemplates[this.gun];
         if (!tpl) return;
+
+        // ShootCooldown
+        const rate = tpl.fireRate || 0;
+        if (rate > 0) {
+            const now = Date.now();
+            const msBetweenShots = 1000 / rate;
+            if (now - this.lastShotTime < msBetweenShots) {
+                return;
+            }
+            this.lastShotTime = now;
+        }
+
+        // Point to shoot at
         const cx = this.x + (this.width || 0) / 2;
         const cy = this.y + (this.height || 0) / 2;
         const worldMouseX = mouseX + CameraMan.x;

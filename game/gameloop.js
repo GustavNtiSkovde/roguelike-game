@@ -2,7 +2,7 @@ import { Scene } from "./menutogame/menubuttons.js";
 import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen } from "./objectlists.js";
 import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
-import { drawCredits, DrawCreditsScreen, startCredits } from "./Ui/credits.js";
+import { drawCredits, DrawCreditsScreen, startCredits } from "./ui/credits.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
