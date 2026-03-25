@@ -1,5 +1,5 @@
 import { Scene } from "./menutogame/menubuttons.js";
-import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen } from "./objectlists.js";
+import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen, MonsterOnScreen } from "./objectlists.js";
 import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
 import { drawCredits, DrawCreditsScreen, startCredits } from "./ui/credits.js";
@@ -67,6 +67,13 @@ function GameScene() {
         ) {
             bulletsOnScreen.splice(idx, 1);
         }
+    });
+
+    // draw and update monsters
+    MonsterOnScreen.forEach((m, idx) => {
+        m.update();
+        m.draw(ctx);
+        MonsterOnScreen.splice(idx, 1);
     });
 
     player.draw(ctx, CameraMan);

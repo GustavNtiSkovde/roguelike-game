@@ -20,3 +20,7 @@ export const CharacterList = [
 export let bulletsOnScreen = [
 
 ]
+
+export let MonsterOnScreen = [
+    
+]
