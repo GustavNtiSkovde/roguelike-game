@@ -73,7 +73,6 @@ function GameScene() {
     MonsterOnScreen.forEach((m, idx) => {
         m.update();
         m.draw(ctx);
-        MonsterOnScreen.splice(idx, 1);
     });
 
     player.draw(ctx, CameraMan);

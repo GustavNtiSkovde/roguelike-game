@@ -28,7 +28,7 @@ export class Mob {
         };
     }
 
-    moveTowardPlayer() {
+    moveTowardPlayer(player) {
         let mobX = player.x - this.x;
         let mobY = player.y - this.y;
         let distance = Math.sqrt(mobX * mobX + mobY * mobY);
