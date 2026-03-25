@@ -43,14 +43,21 @@ export class Mob {
         
     }
 
-    update() {
-        
+    update(player) {
+        this.moveTowardPlayer(player);
+        this.x += this.vx * this.speed;
+        this.y += this.vy * this.speed;
     }
 
-    draw(ctx) {
+    draw(ctx, camera) {
+        const cx = this.x + (this.width || 0) / 2;
+        const cy = this.y + (this.height || 0) / 2;
+        ctx.save();
+        ctx.translate(cx - camera.x, cy - camera.y);
         ctx.drawImage(
             this.img, -(this.width || 0) / 2, -(this.height || 0) / 2
         );
+        ctx.restore();
     }
 
     pushMob() {

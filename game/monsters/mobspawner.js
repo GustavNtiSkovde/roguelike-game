@@ -1,9 +1,9 @@
 import { MonsterOnScreen } from "../objectlists.js"
 import { Mob } from "../characters/mob.js";
-import { randomMob } from "./mobList.js";
+import { mobTemplates } from "./mobList.js";
 
 // Spawn a mob at a random position just outside the camera view
-function spawnMob(camera) {
+export function spawnMob(camera) {
     // Place to spawn
     const margin = 100;
     const edge = Math.floor(Math.random() * 4);
@@ -28,8 +28,11 @@ function spawnMob(camera) {
             break;
     }
 
-    const tpl = bulletTemplates[this.gun];
+    // Get random mob template
+    const keys = Object.keys(mobTemplates);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    const tpl = mobTemplates[randomKey];
 
-    const mob = new Mob(randomMob, x, y, tpl.speed, tpl.dmg, tplimgsrc);
+    const mob = new Mob(randomKey, x, y, tpl.speed, tpl.dmg, tpl.imgsrc);
     MonsterOnScreen.push(mob);
 }

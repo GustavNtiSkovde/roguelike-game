@@ -3,6 +3,7 @@ import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen, MonsterOnScr
 import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
 import { drawCredits, DrawCreditsScreen, startCredits } from "./ui/credits.js";
+import { spawnMob } from "./monsters/mobspawner.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
@@ -71,8 +72,8 @@ function GameScene() {
 
     // draw and update monsters
     MonsterOnScreen.forEach((m, idx) => {
-        m.update();
-        m.draw(ctx);
+        m.update(player);
+        m.draw(ctx, CameraMan);
     });
 
     player.draw(ctx, CameraMan);
