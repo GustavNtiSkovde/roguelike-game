@@ -1,11 +1,18 @@
+import { player } from "../gameloop.js";
+import { Scene } from "../menutogame/menubuttons.js";
 import {CharacterList, MonsterOnScreen} from "../objectlists.js"
 export class Mob {
-    constructor(type, x, y, speed, dmg, imgsrc) {
+    constructor(type, x, y, hp, speed, dmg, attackSpeed, imgsrc) {
         this.type = type;
+        this.attackSpeed = attackSpeed;
+        this.lastAttackTime = 0;
         this.x = x;
         this.y = y;
+        this.hp = hp;
+        this.maxHp = hp;
         this.speed = speed;
         this.dmg = dmg;
+        this.dead = false;
 
         this.img = new Image();
         this.img.src = imgsrc;
@@ -39,8 +46,27 @@ export class Mob {
         }
     }
 
+    takeDamage(amount) {
+        this.hp -= amount;
+        if (this.hp <= 0) {
+            this.dead = true;
+        }
+    }
+
     attack() {
-        
+        player.hp -= this.dmg;
+        console.log("Player HP:", player.hp); 
+        if (player.hp <= 0) {
+            Scene.value = "Credits";
+        }
+    }
+    canAttack() {
+        const now = Date.now();
+        if (now - this.lastAttackTime > this.attackSpeed) {
+            this.lastAttackTime = now;
+            return true;
+        }
+        return false;
     }
 
     update(player) {

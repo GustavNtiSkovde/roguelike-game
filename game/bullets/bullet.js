@@ -28,6 +28,15 @@ export class Bullet {
         this.y += this.vy;
     }
 
+    hitbox() {
+        return {
+            x: this.x,
+            y: this.y,
+            width: this.width || 32,
+            height: this.height || 32
+        };
+    }
+
     draw(ctx, camera) {
         if (!this.img) return;
         const width = this.width || this.img.naturalWidth || 0;

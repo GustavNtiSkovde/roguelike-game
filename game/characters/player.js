@@ -16,8 +16,9 @@ window.addEventListener('mousemove', (e) => {
 let currentWeapon = "pistol"
 
 export class Player extends Character {
-    constructor(x, y, name, imgSrc) {
+    constructor(x, y, hp, name, imgSrc) {
         super(x, y, name, imgSrc);
+        this.hp = hp;
         this.speed = 5;
         this.facing = "down";
         this.moving = false;

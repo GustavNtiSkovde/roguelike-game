@@ -33,6 +33,6 @@ export function spawnMob(camera) {
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
     const tpl = mobTemplates[randomKey];
 
-    const mob = new Mob(randomKey, x, y, tpl.speed, tpl.dmg, tpl.imgsrc);
+    const mob = new Mob(randomKey, x, y, tpl.hp, tpl.speed, tpl.dmg, tpl.attackspeed, tpl.imgsrc);
     MonsterOnScreen.push(mob);
 }

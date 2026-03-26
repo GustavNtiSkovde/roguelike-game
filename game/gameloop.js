@@ -19,7 +19,15 @@ export function canvasResize() {
 
 canvasResize();
 
-let player = CharacterList[0];
+//Variables
+export let player = CharacterList[0];
+
+//Spawning
+let lastSpawnTime = 0;
+const spawnInterval = 2000;
+
+//attack speed
+let currentAttackDone = 0;
 
 function MenuScene() {
     creditsStarted = false;
@@ -55,6 +63,13 @@ function GameScene() {
         ctx.stroke();
     }
 
+    // Spawn mob every 2 seconds
+    const now = Date.now();
+    if (now - lastSpawnTime > spawnInterval) {
+        spawnMob(CameraMan);
+        lastSpawnTime = now;
+    }
+
     // draw and update bullets
     bulletsOnScreen.forEach((b, idx) => {
         b.update();
@@ -74,6 +89,40 @@ function GameScene() {
     MonsterOnScreen.forEach((m, idx) => {
         m.update(player);
         m.draw(ctx, CameraMan);
+
+        // Bullet collisions
+        bulletsOnScreen.forEach((b, bIdx) => {
+            const bHitbox = b.hitbox();
+            const mHitbox = m.hitbox();
+            
+            if (
+                bHitbox.x < mHitbox.x + mHitbox.width &&
+                bHitbox.x + bHitbox.width > mHitbox.x &&
+                bHitbox.y < mHitbox.y + mHitbox.height &&
+                bHitbox.y + bHitbox.height > mHitbox.y
+            ) {
+                m.takeDamage(b.dmg);
+                bulletsOnScreen.splice(bIdx, 1);
+            }
+        });
+
+        // Mob and Player collisions
+        const playerHitbox = player.hitbox();
+        const mobHitbox = m.hitbox();
+        if (
+            playerHitbox.x < mobHitbox.x + mobHitbox.width &&
+            playerHitbox.x + playerHitbox.width > mobHitbox.x &&
+            playerHitbox.y < mobHitbox.y + mobHitbox.height &&
+            playerHitbox.y + playerHitbox.height > mobHitbox.y
+        ) {
+            if (m.canAttack()) {
+                m.attack();
+            }
+        }
+
+        if (m.dead) {
+            MonsterOnScreen.splice(idx, 1);
+        }
     });
 
     player.draw(ctx, CameraMan);
