@@ -1,16 +1,17 @@
 import { Player } from "../characters/player.js";
-import { ctx } from "../canvasctx.js";
+import { ctx, Canvas } from "../canvasctx.js";
 
 const expBarImg = new Image();
 expBarImg.src = "./game/pictures/expbar.png"; // Change to your exp bar image
 
+// Exp bar (vertical)
 const barX = 20;
 const barY = 20;
 const barWidth = 20;
 const barHeight = 500;
-const fillColor = "#00ff00"; // Green color for the progress
+const fillColor = "#00ff00"; // Green color for exp
 
-// Padding for the green fill inside the bar (adjust based on your image outline thickness)
+// Padding for the exp fill inside the bar
 const paddingLeft = 4;
 const paddingRight = 4;
 const paddingTop = 4;
@@ -35,4 +36,3 @@ export function drawExpBar(player) {
     const fillStartY = barY + paddingTop + fillHeight * (1 - progress);
     ctx.fillRect(fillStartX, fillStartY, fillWidth, fillHeight * progress);
 }
-

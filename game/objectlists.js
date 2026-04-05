@@ -14,7 +14,7 @@ export const MenuButtonList = [
 ]
 
 export const CharacterList = [
-    new Player(400, 300, 100, "Player", "./game/Pictures/Characters/player.png")
+    new Player(400, 300, 100, 100, 100, "Player", "./game/Pictures/Characters/player.png")
 ]
 
 export let bulletsOnScreen = [
@@ -23,4 +23,8 @@ export let bulletsOnScreen = [
 
 export let MonsterOnScreen = [
     
+]
+
+export let CardsOnScreen = [
+
 ]

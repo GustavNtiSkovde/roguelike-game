@@ -19,8 +19,10 @@ let currentWeapon = "pistol";
 let lvl = 0;
 
 export class Player extends Character {
-    constructor(x, y, hp, name, imgSrc) {
+    constructor(x, y, maxHp, baseHp, hp, name, imgSrc) {
         super(x, y, name, imgSrc);
+        this.maxHp = maxHp;
+        this.baseHp = baseHp;
         this.hp = hp;
         this.speed = 5;
         this.facing = "down";
@@ -71,24 +73,24 @@ export class Player extends Character {
 
     update() {
         //Movement
-        let moveX = 0;
-        let moveY = 0;
-        if (keys["ArrowUp"] || keys["w"] || keys["W"]) {
-            moveY -= this.speed;
-        }
-        if (keys["ArrowDown"] || keys["s"] || keys["S"]) {
-            moveY += this.speed;
-        }
-        if (keys["ArrowLeft"] || keys["a"] || keys["A"]) {
-            moveX -= this.speed;
-        }
-        if (keys["ArrowRight"] || keys["d"] || keys["D"]) {
-            moveX += this.speed;
-        }
+        let dirX = 0;
+        let dirY = 0;
 
-        this.moving = moveX !== 0 || moveY !== 0;
-        this.x += moveX;
-        this.y += moveY;
+        if (keys["ArrowUp"] || keys["w"] || keys["W"]) dirY -= 1;
+        if (keys["ArrowDown"] || keys["s"] || keys["S"]) dirY += 1;
+        if (keys["ArrowLeft"] || keys["a"] || keys["A"]) dirX -= 1;
+        if (keys["ArrowRight"] || keys["d"] || keys["D"]) dirX += 1;
+
+        this.moving = dirX !== 0 || dirY !== 0;
+
+        if (this.moving) {
+            // Pythagorean theorem to get length of vector
+            let length = Math.sqrt(dirX * dirX + dirY * dirY);
+
+            // Normalize vector
+            this.x += (dirX / length) * this.speed;
+            this.y += (dirY / length) * this.speed;
+        }
         
         //Shoot
         if (keys[" "]) {

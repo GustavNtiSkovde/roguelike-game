@@ -5,6 +5,7 @@ import { Canvas, ctx } from "./canvasctx.js";
 import { DrawCreditsScreen, startCredits } from "./ui/credits.js";
 import { spawnMob } from "./monsters/mobspawner.js";
 import { drawExpBar } from "./Ui/expbar.js";
+import { drawhpBar } from "./Ui/hpbar.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
@@ -160,6 +161,7 @@ function GameScene() {
     ctx.fillText(`Score: ${score}`, 60, 60);
 
     drawExpBar(player);
+    drawhpBar(player);
     player.draw(ctx, CameraMan);
 }
 
