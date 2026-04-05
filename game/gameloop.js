@@ -2,7 +2,7 @@ import { Scene } from "./menutogame/menubuttons.js";
 import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen, MonsterOnScreen } from "./objectlists.js";
 import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
-import { drawCredits, DrawCreditsScreen, startCredits } from "./ui/credits.js";
+import { DrawCreditsScreen, startCredits } from "./ui/credits.js";
 import { spawnMob } from "./monsters/mobspawner.js";
 
 export function canvasResize() {
@@ -131,19 +131,23 @@ function GameScene() {
 let creditsStarted = false;
 
 function creditScene() {
-    DrawCreditsScreen();
     if (!creditsStarted) {
         creditsStarted = true;
         startCredits();
     }
-    drawCredits();
+    DrawCreditsScreen();
 }
 
 function gameLoop() {
     ctx.clearRect(0, 0, Canvas.width, Canvas.height);
     if (Scene.value === "Menu") MenuScene();
     else if (Scene.value === "Game") GameScene();
-    else if (Scene.value === "Credits") creditScene();
+    else if (Scene.value === "Credits") {
+        creditScene();
+        player.hp = 100; // reset player hp for next game
+        MonsterOnScreen.length = 0; // clear monsters for next game
+    }
+        
 
     requestAnimationFrame(gameLoop);
 }

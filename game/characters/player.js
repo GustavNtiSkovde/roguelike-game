@@ -13,7 +13,7 @@ window.addEventListener('mousemove', (e) => {
     mouseY = e.clientY;
 });
 
-let currentWeapon = "pistol"
+let currentWeapon = "pistol";
 
 export class Player extends Character {
     constructor(x, y, hp, name, imgSrc) {
