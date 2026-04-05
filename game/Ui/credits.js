@@ -1,12 +1,6 @@
 import { ctx, Canvas } from "../canvasctx.js"
 import { Scene, Button } from "../menutogame/menubuttons.js"
 
-const credits = [
-    "All time best score:",
-    "-------------------------",
-    "Score this round:"
-];
-
 const Title = new Image();
 Title.src = "./game/pictures/menu/bakgrundcredit.png";
 
@@ -44,7 +38,13 @@ class ContinueButton extends Button {
 
 let continueButton = null;
 
-export function DrawCreditsScreen() {
+export function DrawCreditsScreen(maxScore , score) {
+    const credits = [
+        "All time best score:", maxScore,
+        "-------------------------",
+        "Score this round:", score,
+    ];
+    
     ctx.drawImage(Title, 0, 0, Canvas.width, Canvas.height);
 
     ctx.fillStyle = "white";

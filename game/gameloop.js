@@ -4,6 +4,7 @@ import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
 import { DrawCreditsScreen, startCredits } from "./ui/credits.js";
 import { spawnMob } from "./monsters/mobspawner.js";
+import { drawExpBar } from "./Ui/expbar.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
@@ -28,6 +29,15 @@ const spawnInterval = 2000;
 
 //attack speed
 let currentAttackDone = 0;
+
+//Lvl up
+export let playerNewLvl = false;
+
+// Score
+let lvlscoremultiplier = 1.6;
+let lvlscore = 75;
+export let maxScore = 0;
+export let score = 0;
 
 function MenuScene() {
     creditsStarted = false;
@@ -120,32 +130,68 @@ function GameScene() {
             }
         }
 
+        //Kill
         if (m.dead) {
+            player.expamount += m.exp;
+            console.log(player.expamount);
             MonsterOnScreen.splice(idx, 1);
+            score += m.pointsgiven;
+        }
+
+        //exp lvl up
+        if (player.expamount >= player.expToLevel) {
+            playerNewLvl = true;
+            player.lvl++;
+            player.expamount = 0;
+            player.expToLevel *= 1.25;
+            lvlscore *= lvlscoremultiplier;
+            score += Math.floor(lvlscore);
+            console.log(player.expToLevel, player.expamount);
+        }
+
+        if (score > maxScore) {
+            maxScore = score;
         }
     });
 
+    //Draw score
+    ctx.font = "50px Arial";
+    ctx.fillStyle = "white";
+    ctx.fillText(`Score: ${score}`, 60, 60);
+
+    drawExpBar(player);
     player.draw(ctx, CameraMan);
 }
 
 let creditsStarted = false;
+let creditsScore = 0;
+let creditsMaxScore = 0;
 
 function creditScene() {
     if (!creditsStarted) {
         creditsStarted = true;
+        creditsScore = score; // Save current score
+        creditsMaxScore = maxScore; // Save max score
         startCredits();
     }
-    DrawCreditsScreen();
+    DrawCreditsScreen(creditsMaxScore, creditsScore);
 }
 
 function gameLoop() {
     ctx.clearRect(0, 0, Canvas.width, Canvas.height);
-    if (Scene.value === "Menu") MenuScene();
+    if (Scene.value === "Menu") {
+        creditsStarted = false; // Reset for next game
+        MenuScene();
+    }
     else if (Scene.value === "Game") GameScene();
     else if (Scene.value === "Credits") {
         creditScene();
-        player.hp = 100; // reset player hp for next game
-        MonsterOnScreen.length = 0; // clear monsters for next game
+        player.hp = 100; // reset player hp
+        MonsterOnScreen.length = 0; // clear monsters 
+        player.expamount = 0; // reset exp
+        player.lvl = 0; // reset level
+        player.expToLevel = 100; // reset exp requirement
+        score = 0; // reset score
     }
         
 

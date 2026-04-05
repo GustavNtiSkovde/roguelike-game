@@ -2,7 +2,7 @@ import { player } from "../gameloop.js";
 import { Scene } from "../menutogame/menubuttons.js";
 import {CharacterList, MonsterOnScreen} from "../objectlists.js"
 export class Mob {
-    constructor(type, x, y, hp, speed, dmg, attackSpeed, imgsrc) {
+    constructor(type, x, y, hp, speed, dmg, attackSpeed, exp, pointsgiven, imgsrc) {
         this.type = type;
         this.attackSpeed = attackSpeed;
         this.lastAttackTime = 0;
@@ -13,6 +13,8 @@ export class Mob {
         this.speed = speed;
         this.dmg = dmg;
         this.dead = false;
+        this.exp = exp;
+        this.pointsgiven = pointsgiven;
 
         this.img = new Image();
         this.img.src = imgsrc;

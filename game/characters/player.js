@@ -13,7 +13,10 @@ window.addEventListener('mousemove', (e) => {
     mouseY = e.clientY;
 });
 
+//Weapon
 let currentWeapon = "pistol";
+// Player lvl
+let lvl = 0;
 
 export class Player extends Character {
     constructor(x, y, hp, name, imgSrc) {
@@ -25,6 +28,9 @@ export class Player extends Character {
         this.shooting = false;
         this.gun = currentWeapon;
         this.lastShotTime = 0;
+        this.expamount = 0;
+        this.lvl = 0;
+        this.expToLevel = 100;
     }
 
     hitbox() {
