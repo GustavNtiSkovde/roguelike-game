@@ -1,6 +1,6 @@
 import { player } from "../gameloop.js";
 import { Scene } from "../menutogame/menubuttons.js";
-import {CharacterList, MonsterOnScreen} from "../objectlists.js"
+import { MonsterOnScreen} from "../objectlists.js"
 export class Mob {
     constructor(type, x, y, hp, speed, dmg, attackSpeed, exp, pointsgiven, imgsrc) {
         this.type = type;
@@ -86,9 +86,5 @@ export class Mob {
             this.img, -(this.width || 0) / 2, -(this.height || 0) / 2
         );
         ctx.restore();
-    }
-
-    pushMob() {
-        MonsterOnScreen.push(this);
     }
 }

@@ -1,11 +1,13 @@
 import { Scene } from "./menutogame/menubuttons.js";
-import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen, MonsterOnScreen } from "./objectlists.js";
+import { CharacterList, MenuButtonList, CameraMan, bulletsOnScreen, MonsterOnScreen, CardsOnScreen } from "./objectlists.js";
 import { DrawMenuScreen } from "./menutogame/screen.js";
 import { Canvas, ctx } from "./canvasctx.js";
 import { DrawCreditsScreen, startCredits } from "./ui/credits.js";
 import { spawnMob } from "./monsters/mobspawner.js";
 import { drawExpBar } from "./Ui/expbar.js";
 import { drawhpBar } from "./Ui/hpbar.js";
+import { spawnCards, drawCards, areCardsActive } from "./cards/cardchoser.js";
+import { drawStats } from "./Ui/stats.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
@@ -32,7 +34,11 @@ const spawnInterval = 2000;
 let currentAttackDone = 0;
 
 //Lvl up
-export let playerNewLvl = false;
+export let playerlevelup = false;
+
+export function setPlayerLevelUp(value) {
+    playerlevelup = value;
+}
 
 // Score
 let lvlscoremultiplier = 1.6;
@@ -51,7 +57,10 @@ function MenuScene() {
 function GameScene() {
     player = CharacterList[0];
 
-    player.update();
+    // Only update player if cards are not active
+    if (!areCardsActive()) {
+        player.update();
+    }
     CameraMan.follow(player);
 
     ctx.fillStyle = "#2a2a2a";
@@ -76,93 +85,116 @@ function GameScene() {
 
     // Spawn mob every 2 seconds
     const now = Date.now();
-    if (now - lastSpawnTime > spawnInterval) {
+    if (!areCardsActive() && now - lastSpawnTime > spawnInterval) {
         spawnMob(CameraMan);
         lastSpawnTime = now;
     }
 
-    // draw and update bullets
-    bulletsOnScreen.forEach((b, idx) => {
-        b.update();
-        b.draw(ctx, CameraMan);
-        // remove if far outside of camera view
-        if (
-            b.x < CameraMan.x - 100 ||
-            b.x > CameraMan.x + Canvas.width + 100 ||
-            b.y < CameraMan.y - 100 ||
-            b.y > CameraMan.y + Canvas.height + 100
-        ) {
-            bulletsOnScreen.splice(idx, 1);
-        }
-    });
-
-    // draw and update monsters
-    MonsterOnScreen.forEach((m, idx) => {
-        m.update(player);
-        m.draw(ctx, CameraMan);
-
-        // Bullet collisions
-        bulletsOnScreen.forEach((b, bIdx) => {
-            const bHitbox = b.hitbox();
-            const mHitbox = m.hitbox();
-            
+    // Only update game state if cards are not active
+    if (!areCardsActive()) {
+        // draw and update bullets
+        bulletsOnScreen.forEach((b, idx) => {
+            b.update();
+            b.draw(ctx, CameraMan);
+            // remove if far outside of camera view
             if (
-                bHitbox.x < mHitbox.x + mHitbox.width &&
-                bHitbox.x + bHitbox.width > mHitbox.x &&
-                bHitbox.y < mHitbox.y + mHitbox.height &&
-                bHitbox.y + bHitbox.height > mHitbox.y
+                b.x < CameraMan.x - 100 ||
+                b.x > CameraMan.x + Canvas.width + 100 ||
+                b.y < CameraMan.y - 100 ||
+                b.y > CameraMan.y + Canvas.height + 100
             ) {
-                m.takeDamage(b.dmg);
-                bulletsOnScreen.splice(bIdx, 1);
+                bulletsOnScreen.splice(idx, 1);
             }
         });
 
-        // Mob and Player collisions
-        const playerHitbox = player.hitbox();
-        const mobHitbox = m.hitbox();
-        if (
-            playerHitbox.x < mobHitbox.x + mobHitbox.width &&
-            playerHitbox.x + playerHitbox.width > mobHitbox.x &&
-            playerHitbox.y < mobHitbox.y + mobHitbox.height &&
-            playerHitbox.y + playerHitbox.height > mobHitbox.y
-        ) {
-            if (m.canAttack()) {
-                m.attack();
+        // draw and update monsters
+        MonsterOnScreen.forEach((m, idx) => {
+            m.update(player);
+            m.draw(ctx, CameraMan);
+
+            // Bullet collisions
+            bulletsOnScreen.forEach((b, bIdx) => {
+                const bHitbox = b.hitbox();
+                const mHitbox = m.hitbox();
+                
+                if (
+                    bHitbox.x < mHitbox.x + mHitbox.width &&
+                    bHitbox.x + bHitbox.width > mHitbox.x &&
+                    bHitbox.y < mHitbox.y + mHitbox.height &&
+                    bHitbox.y + bHitbox.height > mHitbox.y
+                ) {
+                    m.takeDamage(b.dmg);
+                    bulletsOnScreen.splice(bIdx, 1);
+                }
+            });
+
+            // Mob and Player collisions
+            const playerHitbox = player.hitbox();
+            const mobHitbox = m.hitbox();
+            if (
+                playerHitbox.x < mobHitbox.x + mobHitbox.width &&
+                playerHitbox.x + playerHitbox.width > mobHitbox.x &&
+                playerHitbox.y < mobHitbox.y + mobHitbox.height &&
+                playerHitbox.y + playerHitbox.height > mobHitbox.y
+            ) {
+                if (m.canAttack()) {
+                    m.attack();
+                }
             }
-        }
 
-        //Kill
-        if (m.dead) {
-            player.expamount += m.exp;
-            console.log(player.expamount);
-            MonsterOnScreen.splice(idx, 1);
-            score += m.pointsgiven;
-        }
+            //Kill
+            if (m.dead) {
+                player.expamount += m.exp;
+                console.log(player.expamount);
+                MonsterOnScreen.splice(idx, 1);
+                score += m.pointsgiven;
+            }
 
-        //exp lvl up
-        if (player.expamount >= player.expToLevel) {
-            playerNewLvl = true;
-            player.lvl++;
-            player.expamount = 0;
-            player.expToLevel *= 1.25;
-            lvlscore *= lvlscoremultiplier;
-            score += Math.floor(lvlscore);
-            console.log(player.expToLevel, player.expamount);
-        }
+            //exp lvl up
+            if (player.expamount >= player.expToLevel) {
+                playerlevelup = true;
+                player.lvl++;
+                player.expamount = 0;
+                player.expToLevel *= 1.25;
+                lvlscore *= lvlscoremultiplier;
+                score += Math.floor(lvlscore);
+                console.log(player.expToLevel, player.expamount);
+                
+                // Spawn card selection
+                spawnCards(player);
+            }
 
-        if (score > maxScore) {
-            maxScore = score;
-        }
-    });
+            if (score > maxScore) {
+                maxScore = score;
+            }
+        });
+    } else {
+        // Draw bullets and monsters but no update
+        bulletsOnScreen.forEach((b) => {
+            b.draw(ctx, CameraMan);
+        });
+        
+        MonsterOnScreen.forEach((m) => {
+            m.draw(ctx, CameraMan);
+        });
+    }
 
     //Draw score
     ctx.font = "50px Arial";
     ctx.fillStyle = "white";
     ctx.fillText(`Score: ${score}`, 60, 60);
-
+    drawStats(player);
     drawExpBar(player);
     drawhpBar(player);
+    
+    
     player.draw(ctx, CameraMan);
+    
+    // Draw cards if spawned
+    if (CardsOnScreen.length > 0) {
+        drawCards(ctx);
+    }
+    
 }
 
 let creditsStarted = false;
@@ -194,6 +226,8 @@ function gameLoop() {
         player.lvl = 0; // reset level
         player.expToLevel = 100; // reset exp requirement
         score = 0; // reset score
+        player.dmg = 10; // reset damage
+        player.hp = player.baseHp; // reset hp to base hp
     }
         
 

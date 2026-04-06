@@ -2,7 +2,7 @@ import { Player } from "../characters/player.js";
 import { ctx, Canvas } from "../canvasctx.js";
 
 const expBarImg = new Image();
-expBarImg.src = "./game/pictures/expbar.png"; // Change to your exp bar image
+expBarImg.src = "./game/pictures/expbar.png";
 
 // Exp bar (vertical)
 const barX = 20;
@@ -26,11 +26,11 @@ export function drawExpBar(player) {
     // Calculate progress 0 to 1 (percentage)
     const progress = Math.min(player.expamount / player.expToLevel, 1);
     
-    // Calculate actual fill area (inside the outline)
+    // Calculate actual fill area
     const fillWidth = barWidth - paddingLeft - paddingRight;
     const fillHeight = barHeight - paddingTop - paddingBottom;
     
-    //Fill bar
+    // Fill bar
     ctx.fillStyle = fillColor;
     const fillStartX = barX + paddingLeft;
     const fillStartY = barY + paddingTop + fillHeight * (1 - progress);

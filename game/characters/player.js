@@ -30,9 +30,14 @@ export class Player extends Character {
         this.shooting = false;
         this.gun = currentWeapon;
         this.lastShotTime = 0;
-        this.expamount = 0;
+        this.expamount = 95;
         this.lvl = 0;
         this.expToLevel = 100;
+        
+        // Weapon stats
+        const weaponTemplate = bulletTemplates[this.gun];
+        this.dmg = weaponTemplate.dmg;
+        this.attackSpeed = weaponTemplate.speed;
     }
 
     hitbox() {
@@ -67,7 +72,7 @@ export class Player extends Character {
         const worldMouseY = mouseY + CameraMan.y;
         const angle = Math.atan2(worldMouseY - cy, worldMouseX - cx);
 
-        const b = new Bullet(this.gun, cx, cy, angle, tpl.speed, tpl.dmg, tpl.imgsrc);
+        const b = new Bullet(this.gun, cx, cy, angle, this.attackSpeed, this.dmg, tpl.imgsrc);
         bulletsOnScreen.push(b);
     }
 
