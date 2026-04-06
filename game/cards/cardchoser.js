@@ -1,4 +1,4 @@
-import { CardsOnScreen } from "../objectlists.js"
+import { CardsOnScreen, MonsterOnScreen } from "../objectlists.js"
 import { Card } from "../cards/card.js";
 import { cardTemplates } from "./cardlist.js";
 import { Canvas } from "../canvasctx.js";
@@ -36,7 +36,7 @@ function selectCard(event) {
     
     for (let card of CardsOnScreen) {
         if (card.isClicked(mouseX, mouseY)) {
-            card.effect(currentPlayer);
+            card.effect(currentPlayer, MonsterOnScreen);
             CardsOnScreen.length = 0;
             window.removeEventListener("click", selectCard);
             setPlayerLevelUp(false);

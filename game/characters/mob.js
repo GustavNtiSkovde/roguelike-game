@@ -30,8 +30,8 @@ export class Mob {
 
     hitbox() {
         return {
-            x: this.x,
-            y: this.y,
+            x: this.x + (this.width || 64) / 2,
+            y: this.y + (this.height || 64) / 2,
             width: this.width || 64,
             height: this.height || 64
         };
@@ -57,7 +57,6 @@ export class Mob {
 
     attack() {
         player.hp -= this.dmg;
-        console.log("Player HP:", player.hp); 
         if (player.hp <= 0) {
             Scene.value = "Credits";
         }

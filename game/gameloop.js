@@ -8,6 +8,8 @@ import { drawExpBar } from "./Ui/expbar.js";
 import { drawhpBar } from "./Ui/hpbar.js";
 import { spawnCards, drawCards, areCardsActive } from "./cards/cardchoser.js";
 import { drawStats } from "./Ui/stats.js";
+import { waveManager } from "./wave/wavemanager.js";
+import { backgroundmusic, initializeMusic, playMusic, setMusicVolume } from "./music/music.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
@@ -26,13 +28,6 @@ canvasResize();
 //Variables
 export let player = CharacterList[0];
 
-//Spawning
-let lastSpawnTime = 0;
-const spawnInterval = 2000;
-
-//attack speed
-let currentAttackDone = 0;
-
 //Lvl up
 export let playerlevelup = false;
 
@@ -46,6 +41,9 @@ let lvlscore = 75;
 export let maxScore = 0;
 export let score = 0;
 
+// Initialize wave system
+waveManager.startWave();
+
 function MenuScene() {
     creditsStarted = false;
     DrawMenuScreen();
@@ -55,6 +53,13 @@ function MenuScene() {
 }
 
 function GameScene() {
+    // Start background music once
+    if (!backgroundmusic) {
+        initializeMusic();
+        playMusic();
+        setMusicVolume(0.1); // 0-1 scale, adjust as needed
+    }
+
     player = CharacterList[0];
 
     // Only update player if cards are not active
@@ -83,11 +88,9 @@ function GameScene() {
         ctx.stroke();
     }
 
-    // Spawn mob every 2 seconds
-    const now = Date.now();
-    if (!areCardsActive() && now - lastSpawnTime > spawnInterval) {
-        spawnMob(CameraMan);
-        lastSpawnTime = now;
+    // Spawn mobs based on wave system
+    if (!areCardsActive()) {
+        waveManager.update(CameraMan);
     }
 
     // Only update game state if cards are not active
@@ -145,7 +148,6 @@ function GameScene() {
             //Kill
             if (m.dead) {
                 player.expamount += m.exp;
-                console.log(player.expamount);
                 MonsterOnScreen.splice(idx, 1);
                 score += m.pointsgiven;
             }
@@ -158,7 +160,6 @@ function GameScene() {
                 player.expToLevel *= 1.25;
                 lvlscore *= lvlscoremultiplier;
                 score += Math.floor(lvlscore);
-                console.log(player.expToLevel, player.expamount);
                 
                 // Spawn card selection
                 spawnCards(player);
@@ -179,10 +180,11 @@ function GameScene() {
         });
     }
 
-    //Draw score
+    //Draw UI
     ctx.font = "50px Arial";
     ctx.fillStyle = "white";
     ctx.fillText(`Score: ${score}`, 60, 60);
+    ctx.fillText(`Wave: ${waveManager.getCurrentWave()}`, 60, 110);
     drawStats(player);
     drawExpBar(player);
     drawhpBar(player);
@@ -226,7 +228,7 @@ function gameLoop() {
         player.lvl = 0; // reset level
         player.expToLevel = 100; // reset exp requirement
         score = 0; // reset score
-        player.dmg = 10; // reset damage
+        player.dmg = 3; // reset damage
         player.hp = player.baseHp; // reset hp to base hp
     }
         
