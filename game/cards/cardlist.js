@@ -2,17 +2,25 @@ const increaseHp = 1.25;
 export const cardTemplates = [
     {
         title: "Dmg increase",
-        effect: (player) => player.dmg += 10,
+        effect: (player, mobs) => { 
+            player.dmg += 3; 
+            // Increase maxHp of all active mobs permanently
+            if (mobs && mobs.length > 0) {
+                mobs.forEach(mob => {
+                    mob.maxHp += 20;
+                });
+            }
+        },
         imgsrc: "./game/pictures/cards/attackdmg.png"
     },
     {
         title: "Attack speed increase",
-        effect: (player) => player.attackSpeed *= 1.25,
+        effect: (player) => Math.floor(player.attackSpeed *= 1.25),
         imgsrc: "./game/pictures/cards/attackspeed.png" 
     },
     {
         title: "Hp increase",
-        effect: (player) => player.maxHp *= increaseHp,
+        effect: (player) => Math.floor(player.maxHp *= increaseHp),
         imgsrc: "./game/pictures/cards/hpincrease.png" 
     },
     {

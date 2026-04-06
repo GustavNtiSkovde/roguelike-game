@@ -1,5 +1,6 @@
 import { ctx, Canvas } from "../canvasctx.js"
 import { Scene, Button } from "../menutogame/menubuttons.js"
+import { backgroundmusic } from "../music/music.js";
 
 const Title = new Image();
 Title.src = "./game/pictures/menu/bakgrundcredit.png";
@@ -33,6 +34,10 @@ class ContinueButton extends Button {
     
     onClick() {
         Scene.value = "Menu";
+        if (backgroundmusic) {
+            backgroundmusic.pause();
+            backgroundmusic.currentTime = 0;
+        }
     }
 }
 

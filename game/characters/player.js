@@ -24,13 +24,13 @@ export class Player extends Character {
         this.maxHp = maxHp;
         this.baseHp = baseHp;
         this.hp = hp;
-        this.speed = 5;
+        this.speed = 5.5;
         this.facing = "down";
         this.moving = false;
         this.shooting = false;
         this.gun = currentWeapon;
         this.lastShotTime = 0;
-        this.expamount = 95;
+        this.expamount = 0;
         this.lvl = 0;
         this.expToLevel = 100;
         
