@@ -6,7 +6,7 @@ hpBarImg.src = "./game/pictures/hpbar.png";
 
 // HP bar (horizontal)
 const hpBarX = Canvas.width / 2 - 40;
-const hpBarY = Canvas.height/2 + 120;
+const hpBarY = Canvas.height/2 + 140;
 const hpBarWidth = 80;
 const hpBarHeight = 4;
 const hpFillColor = "#ff0000"; // Red color for hp
