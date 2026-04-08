@@ -75,20 +75,21 @@ function GameScene() {
     const gridSize = 128;
     const offsetX = -CameraMan.x % gridSize;
     const offsetY = -CameraMan.y % gridSize;
+    
+    ctx.beginPath();
+    // Draw all vertical lines
     for (let x = offsetX; x < Canvas.width; x += gridSize) {
-        ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, Canvas.height);
-        ctx.stroke();
     }
+    // Draw all horizontal lines
     for (let y = offsetY; y < Canvas.height; y += gridSize) {
-        ctx.beginPath();
         ctx.moveTo(0, y);
         ctx.lineTo(Canvas.width, y);
-        ctx.stroke();
     }
+    ctx.stroke();
 
-    // Spawn mobs based on wave system
+    // Spawn mobs based on waves
     if (!areCardsActive()) {
         waveManager.update(CameraMan);
     }
