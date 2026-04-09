@@ -10,6 +10,7 @@ import { spawnCards, drawCards, areCardsActive } from "./cards/cardchoser.js";
 import { drawStats } from "./Ui/stats.js";
 import { waveManager } from "./wave/wavemanager.js";
 import { backgroundmusic, initializeMusic, playMusic, setMusicVolume } from "./music/music.js";
+import { drawMap } from "./Map/map.js";
 
 export function canvasResize() {
     Canvas.width = window.innerWidth;
@@ -68,26 +69,7 @@ function GameScene() {
     }
     CameraMan.follow(player);
 
-    ctx.fillStyle = "#2a2a2a";
-    ctx.fillRect(0, 0, Canvas.width, Canvas.height);
-
-    ctx.strokeStyle = "#3a3a3a";
-    const gridSize = 128;
-    const offsetX = -CameraMan.x % gridSize;
-    const offsetY = -CameraMan.y % gridSize;
-    
-    ctx.beginPath();
-    // Draw all vertical lines
-    for (let x = offsetX; x < Canvas.width; x += gridSize) {
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, Canvas.height);
-    }
-    // Draw all horizontal lines
-    for (let y = offsetY; y < Canvas.height; y += gridSize) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(Canvas.width, y);
-    }
-    ctx.stroke();
+    drawMap();
 
     // Spawn mobs based on waves
     if (!areCardsActive()) {
@@ -110,6 +92,35 @@ function GameScene() {
                 bulletsOnScreen.splice(idx, 1);
             }
         });
+
+        // Mob-to-Mob collision detection
+        for (let i = 0; i < MonsterOnScreen.length; i++) {
+            for (let j = i + 1; j < MonsterOnScreen.length; j++) {
+                const m1 = MonsterOnScreen[i];
+                const m2 = MonsterOnScreen[j];
+                const h1 = m1.hitbox();
+                const h2 = m2.hitbox();
+                
+                // Check if mobs are colliding
+                if (
+                    h1.x < h2.x + h2.width &&
+                    h1.x + h1.width > h2.x &&
+                    h1.y < h2.y + h2.height &&
+                    h1.y + h1.height > h2.y
+                ) {
+                    // Push mobs apart
+                    const dx = (h1.x + h1.width / 2) - (h2.x + h2.width / 2);
+                    const dy = (h1.y + h1.height / 2) - (h2.y + h2.height / 2);
+                    const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+                    const pushForce = 2;
+                    
+                    m1.x += (dx / dist) * pushForce;
+                    m1.y += (dy / dist) * pushForce;
+                    m2.x -= (dx / dist) * pushForce;
+                    m2.y -= (dy / dist) * pushForce;
+                }
+            }
+        }
 
         // draw and update monsters
         MonsterOnScreen.forEach((m, idx) => {
